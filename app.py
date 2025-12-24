@@ -51,4 +51,5 @@ def home():
             prediction = f"Error: {e}"
     return render_template("home1.html",prediction=prediction,values=values,missing=missing,error=error)
 if __name__=="__main__":
-    app.run(debug=True)
+    port=int(os.environ.get("PORT",5000))
+    app.run(host="0.0.0.0",port=port)
