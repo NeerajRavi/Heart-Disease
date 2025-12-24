@@ -2,7 +2,7 @@ from flask import Flask,render_template,request
 import joblib
 import numpy as np
 app=Flask(__name__)
-model=joblib.load("heart_disease_model.joblib")
+model=joblib.load("https://huggingface.co/NeerajRavi/heart-disease-prediction-model/resolve/main/heart_disease_model.joblib")
 scaler=joblib.load("heart_scaler.joblib")
 
 @app.route("/",methods=["GET","POST"])
