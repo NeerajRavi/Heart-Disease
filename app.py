@@ -6,18 +6,34 @@ import numpy as np
 
 app=Flask(__name__)
 
-model_url="https://huggingface.co/NeerajRavi/heart-disease-prediction-model/resolve/main/heart_disease_model.joblib"
-model_path="heart_disease_model.joblib"
-if not os.path.exists(model_path):
-    r=requests.get(model_url)
-    r.raise_for_status()
-    with open(model_path,"wb") as f:
-        f.write(r.content)
-model = joblib.load(model_path)
+model = None
+def load_assets():
+    global model
+    if model is None:
+        import requests, joblib, os
+        MODEL_URL = "https://huggingface.co/NeerajRavi/heart-disease-prediction-model/resolve/main/heart_disease_model.joblib"
+        MODEL_PATH = "heart_disease_model.joblib"
+        if not os.path.exists(MODEL_PATH):
+            r = requests.get(MODEL_URL)
+            r.raise_for_status()
+            with open(MODEL_PATH, "wb") as f:
+                f.write(r.content)
+        model = joblib.load(MODEL_PATH)
+
+# model_url="https://huggingface.co/NeerajRavi/heart-disease-prediction-model/resolve/main/heart_disease_model.joblib"
+# model_path="heart_disease_model.joblib"
+# if not os.path.exists(model_path):
+#     r=requests.get(model_url)
+#     r.raise_for_status()
+#     with open(model_path,"wb") as f:
+#         f.write(r.content)
+# model = joblib.load(model_path)
+
 scaler=joblib.load("heart_scaler.joblib")
 
 @app.route("/",methods=["GET","POST"])
 def home():
+    load_assets()
     prediction=None
     error=None
     missing=[]
