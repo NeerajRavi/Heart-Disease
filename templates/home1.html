@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Heart Disease Risk Prediction</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+
+            /* Background + Gradient Overlay */
+            background:
+                linear-gradient(rgba(170, 2, 2, 0.8), rgba(0,0,0,0.80)),
+                url("{{ url_for('static', filename='unsplash.jpg') }}")
+                no-repeat center center fixed;
+            background-size: cover;
+
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            position: relative;
+        }
+
+        /* Glassmorphism card */
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 520px;
+            background: rgba(255, 255, 255, 0.12);
+            padding: 35px 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.2);
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from {opacity:0; transform: translateY(20px);}
+            to {opacity:1; transform: translateY(0);}
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(255,255,255,0.4);
+        }
+
+        label {
+            font-weight: 600;
+            margin-top: 12px;
+            display: block;
+            font-size: 14px;
+            color: #fff;
+        }
+
+        .missing-mark {
+            color: #ff7675;
+            font-weight: bold;
+            margin-left: 4px;
+        }
+
+        .error-border {
+            border: 2px solid #ff7675 !important;
+        }
+
+        /* Neon-style input/select */
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.3);
+            margin-top: 4px;
+            font-size: 15px;
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            backdrop-filter: blur(6px);
+            transition: 0.3s ease;
+        }
+
+        input::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+
+        input:focus, select:focus {
+            border-color: #00cec9;
+            background: rgba(0,0,0,0.25);
+            outline: none;
+            box-shadow: 0 0 8px rgba(0,206,201,0.6);
+        }
+
+        /* Neon button */
+        button {
+            margin-top: 22px;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            background: linear-gradient(135deg, #00cec9, #0984e3);
+            color: #fff;
+            font-size: 17px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.25s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+
+        button:hover {
+            opacity: 0.85;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+        }
+
+        /* Prediction Output Box */
+        .result {
+            margin-top: 25px;
+            padding: 18px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 18px;
+            color: #fff;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(6px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+            animation: fadeIn 0.4s ease;
+        }
+
+        /* Clear button */
+        .new-btn {
+            margin-top: 15px;
+            background: linear-gradient(135deg, #636e72, #2d3436);
+        }
+
+        .new-btn:hover {
+            opacity: 0.85;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>Heart Disease Risk Prediction</h1>
+
+    <form method="POST">
+
+        {% macro field(name, label, type="number") %}
+            <label>
+                {{ label }}
+                {% if name in missing %}
+                    <span class="missing-mark">*</span>
+                {% endif %}
+            </label>
+
+            {% if type == "select" %}
+                <select name="{{ name }}" class="{% if name in missing %}error-border{% endif %}">
+                    {{ caller() }}
+                </select>
+            {% else %}
+                <input type="{{ type }}"
+                       name="{{ name }}"
+                       value="{{ values.get(name,'') }}"
+                       class="{% if name in missing %}error-border{% endif %}">
+            {% endif %}
+        {% endmacro %}
+
+        {% call field("age", "Age") %}{% endcall %}
+
+        {% call field("gender", "Gender", "select") %}
+            <option value="">Select</option>
+            <option value="2" {% if values.gender=='2' %}selected{% endif %}>Male</option>
+            <option value="1" {% if values.gender=='1' %}selected{% endif %}>Female</option>
+        {% endcall %}
+
+        {% call field("height", "Height (cm)") %}{% endcall %}
+        {% call field("weight", "Weight (kg)") %}{% endcall %}
+        {% call field("ap_hi", "Systolic BP") %}{% endcall %}
+        {% call field("ap_lo", "Diastolic BP") %}{% endcall %}
+
+        {% call field("cholesterol", "Cholesterol", "select") %}
+            <option value="">Select</option>
+            <option value="1" {% if values.cholesterol=='1' %}selected{% endif %}>Normal</option>
+            <option value="2" {% if values.cholesterol=='2' %}selected{% endif %}>Above Normal</option>
+            <option value="3" {% if values.cholesterol=='3' %}selected{% endif %}>Well Above Normal</option>
+        {% endcall %}
+
+        {% call field("gluc", "Glucose", "select") %}
+            <option value="">Select</option>
+            <option value="1" {% if values.gluc=='1' %}selected{% endif %}>Normal</option>
+            <option value="2" {% if values.gluc=='2' %}selected{% endif %}>Above Normal</option>
+            <option value="3" {% if values.gluc=='3' %}selected{% endif %}>Well Above Normal</option>
+        {% endcall %}
+
+        {% call field("smoke", "Smoke", "select") %}
+            <option value="">Select</option>
+            <option value="1" {% if values.smoke=='1' %}selected{% endif %}>Yes</option>
+            <option value="0" {% if values.smoke=='0' %}selected{% endif %}>No</option>
+        {% endcall %}
+
+        {% call field("alco", "Alcohol Intake", "select") %}
+            <option value="">Select</option>
+            <option value="1" {% if values.alco=='1' %}selected{% endif %}>Yes</option>
+            <option value="0" {% if values.alco=='0' %}selected{% endif %}>No</option>
+        {% endcall %}
+
+        {% call field("active", "Physical Activity", "select") %}
+            <option value="">Select</option>
+            <option value="1" {% if values.active=='1' %}selected{% endif %}>Yes</option>
+            <option value="0" {% if values.active=='0' %}selected{% endif %}>No</option>
+        {% endcall %}
+
+        <button type="submit">Predict</button>
+
+    </form>
+
+    {% if prediction %}
+    <div class="result">
+        {{ prediction }}
+
+        <form method="GET">
+            <button class="new-btn">Clear All</button>
+        </form>
+    </div>
+    {% endif %}
+
+</div>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Heart Disease Risk Prediction</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: url("{{ url_for('static', filename='bg.jpg') }}") no-repeat center center/cover;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 40px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 30px 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            max-width: 480px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #d63031;
+        }
+
+        label {
+            font-weight: 600;
+            margin-top: 10px;
+            display: block;
+        }
+
+        .missing-mark {
+            color: red;
+            font-weight: bold;
+            margin-left: 4px;
+        }
+
+        .error-border {
+            border: 2px solid red !important;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            margin-top: 4px;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            background: #e17055;
+            color: #fff;
+            font-size: 17px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #d63031;
+        }
+
+        .result {
+            margin-top: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .new-btn {
+            background: #0984e3;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>Heart Disease Risk Prediction</h1>
+
+    <form method="POST">
+
+        {% macro field(name, label, type="number") %}
+            <label>
+                {{ label }}
+                {% if name in missing %}
+                    <span class="missing-mark">*</span>
+                {% endif %}
+            </label>
+
+            {% if type == "select" %}
+                <select name="{{ name }}" class="{% if name in missing %}error-border{% endif %}">
+                    {{ caller() }}
+                </select>
+            {% else %}
+                <input type="{{ type }}"
+                       name="{{ name }}"
+                       value="{{ values.get(name,'') }}"
+                       class="{% if name in missing %}error-border{% endif %}">
+            {% endif %}
+        {% endmacro %}
+
+        {% call field("age", "Age") %}{% endcall %}
+
+        {% call field("gender", "Gender", "select") %}
+            <option value="">Select</option>
+            <option value="2" {% if values.gender=='2' %}selected{% endif %}>Male</option>
+            <option value="1" {% if values.gender=='1' %}selected{% endif %}>Female</option>
+        {% endcall %}
+
+        {% call field("height", "Height (cm)") %}{% endcall %}
+        {% call field("weight", "Weight (kg)") %}{% endcall %}
+        {% call field("ap_hi", "Systolic BP") %}{% endcall %}
+        {% call field("ap_lo", "Diastolic BP") %}{% endcall %}
+
+        {% call field("cholesterol", "Cholesterol", "select") %}
+            <option value="">Select</option>
+            <option value="1" {% if values.cholesterol=='1' %}selected{% endif %}>Normal</option>
+            <option value="2" {% if values.cholesterol=='2' %}selected{% endif %}>Above Normal</option>
+            <option value="3" {% if values.cholesterol=='3' %}selected{% endif %}>Well Above Normal</option>
+        {% endcall %}
+
+        {% call field("gluc", "Glucose", "select") %}
+            <option value="">Select</option>
+            <option value="1" {% if values.gluc=='1' %}selected{% endif %}>Normal</option>
+            <option value="2" {% if values.gluc=='2' %}selected{% endif %}>Above Normal</option>
+            <option value="3" {% if values.gluc=='3' %}selected{% endif %}>Well Above Normal</option>
+        {% endcall %}
+
+        {% call field("smoke", "Smoke", "select") %}
+            <option value="">Select</option>
+            <option value="1" {% if values.smoke=='1' %}selected{% endif %}>Yes</option>
+            <option value="0" {% if values.smoke=='0' %}selected{% endif %}>No</option>
+        {% endcall %}
+
+        {% call field("alco", "Alcohol Intake", "select") %}
+            <option value="">Select</option>
+            <option value="1" {% if values.alco=='1' %}selected{% endif %}>Yes</option>
+            <option value="0" {% if values.alco=='0' %}selected{% endif %}>No</option>
+        {% endcall %}
+
+        {% call field("active", "Physical Activity", "select") %}
+            <option value="">Select</option>
+            <option value="1" {% if values.active=='1' %}selected{% endif %}>Yes</option>
+            <option value="0" {% if values.active=='0' %}selected{% endif %}>No</option>
+        {% endcall %}
+
+        <button type="submit">Predict</button>
+
+    </form>
+
+    {% if prediction %}
+    <div class="result">
+        {{ prediction }}
+
+        <!-- Clear All button -->
+        <form method="GET">
+            <button class="new-btn">Clear All</button>
+        </form>
+    </div>
+    {% endif %}
+
+</div>
+</body>
+</html>
