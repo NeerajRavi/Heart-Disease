@@ -1,6 +1,6 @@
 flask
 gunicorn
 numpy
-scikit-learn=1.6.1
+scikit-learn==1.6.1
 joblib
 requests
