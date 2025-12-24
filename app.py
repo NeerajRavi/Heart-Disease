@@ -31,44 +31,44 @@ def load_assets():
 
 scaler=joblib.load("heart_scaler.joblib")
 
-# @app.route("/",methods=["GET","POST"])
-# def home():
-#     load_assets()
-#     prediction=None
-#     error=None
-#     missing=[]
-#     values = {
-#         "age":"",
-#         "gender":"",
-#         "height":"",
-#         "weight":"",
-#         "ap_hi":"",
-#         "ap_lo":"",
-#         "cholesterol":"",
-#         "gluc":"",
-#         "smoke":"",
-#         "alco":"",
-#         "active":""
-#     }
-#     if request.method=="POST":
-#         try:
-#             for key in values:
-#                 values[key]=request.form.get(key,"")
-#                 if values[key]=="":
-#                     missing.append(key)
-#             if missing:
-#                 error = "Please fill all fields before predicting."
-#                 return render_template("home.html",prediction=None,values=values,missing=missing,error=error)
-#             features = np.array([[float(values[k]) for k in values]])
-#             scaled=scaler.transform(features)
-#             pred = model.predict(scaled)[0]
-#             prediction = "High chance of heart disease" if pred == 1 else "Low chance of heart disease"
-#         except Exception as e:
-#             prediction = f"Error: {e}"
-#     return render_template("home1.html",prediction=prediction,values=values,missing=missing,error=error)
-@app.route("/health")
-def health():
-    return "OK"
+@app.route("/",methods=["GET","POST"])
+def home():
+    load_assets()
+    prediction=None
+    error=None
+    missing=[]
+    values = {
+        "age":"",
+        "gender":"",
+        "height":"",
+        "weight":"",
+        "ap_hi":"",
+        "ap_lo":"",
+        "cholesterol":"",
+        "gluc":"",
+        "smoke":"",
+        "alco":"",
+        "active":""
+    }
+    if request.method=="POST":
+        try:
+            for key in values:
+                values[key]=request.form.get(key,"")
+                if values[key]=="":
+                    missing.append(key)
+            if missing:
+                error = "Please fill all fields before predicting."
+                return render_template("home.html",prediction=None,values=values,missing=missing,error=error)
+            features = np.array([[float(values[k]) for k in values]])
+            scaled=scaler.transform(features)
+            pred = model.predict(scaled)[0]
+            prediction = "High chance of heart disease" if pred == 1 else "Low chance of heart disease"
+        except Exception as e:
+            prediction = f"Error: {e}"
+    return render_template("home1.html",prediction=prediction,values=values,missing=missing,error=error)
+# @app.route("/health")
+# def health():
+#     return "OK"
 
 if __name__=="__main__":
     port=int(os.environ.get("PORT",5000))
