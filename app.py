@@ -6,7 +6,7 @@ import numpy as np
 
 app=Flask(__name__)
 
-model_url=joblib.load("https://huggingface.co/NeerajRavi/heart-disease-prediction-model/resolve/main/heart_disease_model.joblib")
+model_url="https://huggingface.co/NeerajRavi/heart-disease-prediction-model/resolve/main/heart_disease_model.joblib"
 model_path="heart_disease_model.joblib"
 if not os.path.exists(model_path):
     r=requests.get(model_url)
