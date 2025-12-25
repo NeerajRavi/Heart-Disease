@@ -7,18 +7,23 @@ import numpy as np
 app=Flask(__name__)
 
 model = None
+scaler = None
 def load_assets():
-    global model
+    global model, scaler
     if model is None:
-        import requests, joblib, os
         MODEL_URL = "https://huggingface.co/NeerajRavi/heart-disease-prediction-model/resolve/main/heart_disease_model.joblib"
         MODEL_PATH = "heart_disease_model.joblib"
+
         if not os.path.exists(MODEL_PATH):
             r = requests.get(MODEL_URL)
             r.raise_for_status()
             with open(MODEL_PATH, "wb") as f:
                 f.write(r.content)
+
         model = joblib.load(MODEL_PATH)
+
+    if scaler is None:
+        scaler = joblib.load("heart_scaler.joblib")
 
 # model_url="https://huggingface.co/NeerajRavi/heart-disease-prediction-model/resolve/main/heart_disease_model.joblib"
 # model_path="heart_disease_model.joblib"
