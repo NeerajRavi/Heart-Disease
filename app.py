@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request
 import joblib
 import os
-import requests
 import numpy as np
 
 app = Flask(__name__)
@@ -9,25 +8,28 @@ app = Flask(__name__)
 model = None
 scaler = None
 
+
 def load_assets():
     global model, scaler
 
     if model is None:
-        MODEL_URL = "https://huggingface.co/NeerajRavi/heart-disease-prediction-model/resolve/main/heart_disease_model.joblib"
         MODEL_PATH = "heart_disease_model.joblib"
 
         if not os.path.exists(MODEL_PATH):
-            r = requests.get(MODEL_URL)
-            r.raise_for_status()
-            with open(MODEL_PATH, "wb") as f:
-                f.write(r.content)
+            raise FileNotFoundError("heart_disease_model.joblib not found")
 
         model = joblib.load(MODEL_PATH)
 
     if scaler is None:
-        scaler = joblib.load("heart_scaler.joblib")
+        SCALER_PATH = "heart_scaler.joblib"
+
+        if not os.path.exists(SCALER_PATH):
+            raise FileNotFoundError("heart_scaler.joblib not found")
+
+        scaler = joblib.load(SCALER_PATH)
 
 
+# 🔹 health check for Render
 @app.route("/health")
 def health():
     return "OK", 200
@@ -55,10 +57,10 @@ def home():
 
     if request.method == "POST":
         try:
-            load_assets()   # 🔥 load ML only when needed
+            load_assets()   # load only once
 
             for key in values:
-                values[key] = request.form.get(key, "")
+                values[key] = request.form.get(key, "").strip()
                 if values[key] == "":
                     missing.append(key)
 
@@ -72,7 +74,27 @@ def home():
                     error=error
                 )
 
-            features = np.array([[float(values[k]) for k in values]])
+            # ⚠️ explicit feature order (VERY IMPORTANT)
+            features = np.array([[
+                float(values["age"]),
+                float(values["gender"]),
+                float(values["height"]),
+                float(values["weight"]),
+                float(values["ap_hi"]),
+                float(values["ap_lo"]),
+                float(values["cholesterol"]),
+                float(values["gluc"]),
+                float(values["smoke"]),
+                float(values["alco"]),
+                float(values["active"])
+            ]])
+
+            # safety check
+            if features.shape[1] != scaler.n_features_in_:
+                raise ValueError(
+                    f"Feature mismatch: expected {scaler.n_features_in_}, got {features.shape[1]}"
+                )
+
             scaled = scaler.transform(features)
             pred = model.predict(scaled)[0]
 
@@ -83,7 +105,7 @@ def home():
             )
 
         except Exception as e:
-            error = str(e)
+            error = f"Prediction failed: {e}"
 
     return render_template(
         "home1.html",
