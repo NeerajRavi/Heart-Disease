@@ -13,10 +13,10 @@ def load_assets():
     global model, scaler
 
     if model is None:
-        MODEL_PATH = "heart_disease_model.joblib"
+        MODEL_PATH = "heart_disease_model2.joblib"
 
         if not os.path.exists(MODEL_PATH):
-            raise FileNotFoundError("heart_disease_model.joblib not found")
+            raise FileNotFoundError("heart_disease_model2.joblib not found")
 
         model = joblib.load(MODEL_PATH)
 
