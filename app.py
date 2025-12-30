@@ -126,7 +126,7 @@ app = Flask(__name__)
 model = None
 scaler = None
 
-N8N_WEBHOOK_URL = "https://yourname.app.n8n.cloud/webhook/heart-prediction"
+N8N_WEBHOOK_URL = "https://neerajacadeno.app.n8n.cloud/webhook/heart-prediction"
 
 
 def load_assets():
