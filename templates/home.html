@@ -7,83 +7,142 @@
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: url("{{ url_for('static', filename='bg.jpg') }}") no-repeat center center/cover;
-            min-height: 100vh;
+
+            /* FIXED OVERLAY: softer red, image visible */
+            background:
+                radial-gradient(
+                    circle at center,
+                    rgba(0, 0, 0, 0.22) 0%,
+                    rgba(120, 0, 0, 0.40) 60%,
+                    rgba(80, 0, 0, 0.60) 100%
+                ),
+                url("{{ url_for('static', filename='unsplash.jpg') }}")
+                no-repeat center center fixed;
+
+            background-size: cover;
+
             margin: 0;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
-            padding-top: 40px;
+            align-items: center;
+            padding: 40px;
+            position: relative;
         }
 
+        /* Glassmorphism card */
         .container {
-            background: rgba(255, 255, 255, 0.85);
-            padding: 30px 40px;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-            max-width: 480px;
+            position: relative;
+            z-index: 1;
             width: 100%;
+            max-width: 520px;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 35px 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.2);
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from {opacity:0; transform: translateY(20px);}
+            to {opacity:1; transform: translateY(0);}
         }
 
         h1 {
             text-align: center;
             margin-bottom: 25px;
-            color: #d63031;
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(255,255,255,0.4);
         }
 
         label {
             font-weight: 600;
-            margin-top: 10px;
+            margin-top: 12px;
             display: block;
+            font-size: 14px;
+            color: #fff;
         }
 
         .missing-mark {
-            color: red;
+            color: #ff7675;
             font-weight: bold;
             margin-left: 4px;
         }
 
         .error-border {
-            border: 2px solid red !important;
+            border: 2px solid #ff7675 !important;
         }
 
         input, select {
             width: 100%;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.3);
             margin-top: 4px;
+            font-size: 15px;
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            backdrop-filter: blur(6px);
+            transition: 0.3s ease;
+        }
+
+        input::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+
+        input:focus, select:focus {
+            border-color: #00cec9;
+            background: rgba(0,0,0,0.25);
+            outline: none;
+            box-shadow: 0 0 8px rgba(0,206,201,0.6);
         }
 
         button {
-            margin-top: 20px;
+            margin-top: 22px;
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             border: none;
-            background: #e17055;
+            background: linear-gradient(135deg, #00cec9, #0984e3);
             color: #fff;
             font-size: 17px;
-            border-radius: 6px;
+            border-radius: 10px;
             cursor: pointer;
+            font-weight: 600;
+            transition: 0.25s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         }
 
         button:hover {
-            background: #d63031;
+            opacity: 0.85;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.45);
         }
 
         .result {
-            margin-top: 20px;
-            background: rgba(255,255,255,0.9);
-            padding: 15px;
-            border-radius: 8px;
+            margin-top: 25px;
+            padding: 18px;
+            border-radius: 12px;
             text-align: center;
-            font-weight: bold;
+            font-weight: 600;
             font-size: 18px;
+            color: #fff;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(6px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+            animation: fadeIn 0.4s ease;
         }
 
         .new-btn {
-            background: #0984e3;
-            margin-top: 10px;
+            margin-top: 15px;
+            background: linear-gradient(135deg, #636e72, #2d3436);
+        }
+
+        .new-btn:hover {
+            opacity: 0.85;
         }
     </style>
 </head>
@@ -168,7 +227,6 @@
     <div class="result">
         {{ prediction }}
 
-        <!-- Clear All button -->
         <form method="GET">
             <button class="new-btn">Clear All</button>
         </form>
