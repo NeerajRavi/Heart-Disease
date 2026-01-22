@@ -71,5 +71,5 @@ def home():
                            values=values,
                            missing=missing,
                            error=error)
-if __name__ == "__main__":
-    app.run(debug=True)
+# if __name__ == "__main__":
+#     app.run(debug=True)
